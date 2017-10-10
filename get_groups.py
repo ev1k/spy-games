@@ -34,8 +34,13 @@ class VkApi(VkBase):
     def get_friends(self, user_id):
         url = urljoin(self.API_URL, 'friends.get')
         params = self.get_params(user_id=user_id)
-        response = requests.get(url, params)
-        return response.json()['response']['items']
+        try:
+            response = requests.get(url, params=params)
+            return response.json()['response']['items']
+        except requests.exceptions.RequestException as e:
+            print('requests.exceptions.RequestException: {}'.format(e))
+        finally:
+            return []
 
     def get_groups(self, user_id, extended=None, fields=None):
         url = urljoin(self.API_URL, 'groups.get')
@@ -44,17 +49,24 @@ class VkApi(VkBase):
             extended=extended,
             fields=fields
         )
-        response = requests.get(url, params)
         try:
+            response = requests.get(url, params=params)
             return response.json()['response']['items']
-        except:
+        except requests.exceptions.RequestException as e:
+            print('requests.exceptions.RequestException: {}'.format(e))
+        finally:
             return []
 
     def get_group_info(self, group_id, fields):
         url = urljoin(self.API_URL, 'groups.getById')
         params = self.get_params(group_id=group_id, fields=fields)
-        response = requests.get(url, params)
-        return response.json()['response']
+        try:
+            response = requests.get(url, parms=params)
+            return response.json()['response']
+        except requests.exceptions.RequestException as e:
+            print('requests.exceptions.RequestException: {}'.format(e))
+        finally:
+            return []
 
 
 def write_json(data):
