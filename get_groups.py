@@ -3,9 +3,9 @@ import requests
 import json
 from time import sleep
 
-TOKEN = ''
+TOKEN = '5dfd6b0dee902310df772082421968f4c06443abecbc082a8440cb18910a56daca73ac8d04b25154a1128'
 VERSION = '5.67'
-USER_ID = ''
+USER_ID = '5030613'
 
 
 class VkBase:
@@ -32,17 +32,19 @@ class VkApi(VkBase):
         self.version = version
 
     def get_friends(self, user_id):
+        friends = []
         url = urljoin(self.API_URL, 'friends.get')
         params = self.get_params(user_id=user_id)
         try:
             response = requests.get(url, params=params)
-            return response.json()['response']['items']
+            friends = response.json()['response']['items']
         except requests.exceptions.RequestException as e:
             print('requests.exceptions.RequestException: {}'.format(e))
         finally:
-            return []
+            return friends
 
     def get_groups(self, user_id, extended=None, fields=None):
+        groups = []
         url = urljoin(self.API_URL, 'groups.get')
         params = self.get_params(
             user_id=user_id,
@@ -51,22 +53,24 @@ class VkApi(VkBase):
         )
         try:
             response = requests.get(url, params=params)
-            return response.json()['response']['items']
+            groups = response.json()['response']['items']
         except requests.exceptions.RequestException as e:
             print('requests.exceptions.RequestException: {}'.format(e))
         finally:
-            return []
+            return groups
 
     def get_group_info(self, group_id, fields):
+        group_info = {}
         url = urljoin(self.API_URL, 'groups.getById')
         params = self.get_params(group_id=group_id, fields=fields)
         try:
-            response = requests.get(url, parms=params)
-            return response.json()['response']
+            response = requests.get(url, params=params)
+            group_info = response.json()['response']
         except requests.exceptions.RequestException as e:
             print('requests.exceptions.RequestException: {}'.format(e))
         finally:
-            return []
+            return group_info
+
 
 
 def write_json(data):
@@ -80,6 +84,7 @@ if __name__ == '__main__':
     count_friends = len(friends_vk)
     groups_vk = vk.get_groups(USER_ID)
     set_my_groups = set(groups_vk)
+    group_info = vk.get_group_info(18020037, 'members_count')
     for friend in friends_vk:
         friend_groups = vk.get_groups(friend)
         set_friend_group = set(friend_groups)
